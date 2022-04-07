@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 const response = (res, title, status, result, message, error) => {
-    res.status().json({
+    res.status(status).json({
         title : title,
         status : status,
         result : result,
