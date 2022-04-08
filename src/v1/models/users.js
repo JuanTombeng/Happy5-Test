@@ -52,9 +52,23 @@ const getUserId = (username) => {
     })
 }
 
+const checkUsername = (user_id) => {
+    return new Promise ((resolve, reject) => {
+        const sql = `SELECT username, email FROM users WHERE id = ?`
+        connection.query(sql, user_id, (error, result) => {
+            if (!error) {
+                resolve(result)
+            } else {
+                reject(error)
+            }
+        })
+    })
+}
+
 module.exports = {
     getUser,
     findUser,
     signup,
-    getUserId
+    getUserId,
+    checkUsername
 }

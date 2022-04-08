@@ -69,10 +69,24 @@ const getContactList = (contact_group_id) => {
     })
 }
 
+const getContactMemberId = (contact_group_id) => {
+    return new Promise ((resolve, reject) => {
+        const sql = `SELECT user_id FROM contact_member WHERE contact_group_id = ?`
+        connection.query(sql, contact_group_id, (error, result) => {
+            if (!error) {
+                resolve(result)
+            } else {
+                reject(error)
+            }
+        })
+    })
+}
+
 module.exports = {
     createContactGroup,
     checkContactGroup,
     updateTotalContact,
     addContactMember,
-    getContactList
+    getContactList,
+    getContactMemberId
 }
