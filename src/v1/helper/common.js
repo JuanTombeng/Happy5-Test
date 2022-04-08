@@ -24,13 +24,13 @@ const errorHandling = (err, res) => {
 }
 
 const generateToken = (payload) => {
-    const secretKey = proccess.env.SECRET_KEY
+    const secretKey = process.env.SECRET_KEY
     const verifyOptions = {
         expiresIn : 60 * 60,
         issuer : 'happy5'
     }
-    const token = jwt.sign(payload, secretKey, verifyOptions)
-    return token
+    const result = jwt.sign(payload, secretKey, verifyOptions)
+    return result
 }
 
 module.exports = {
