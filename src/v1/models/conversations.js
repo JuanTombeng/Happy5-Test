@@ -13,10 +13,10 @@ const newConversation = (data) => {
     })
 }
 
-const checkExistingConversation = (user_id_1, user_id_2) => {
+const checkExistingConversation = (user_1_id, user_2_id) => {
     return new Promise ((resolve, reject) => {
-        const sql = `SELECT conversation_id FROM conversation_member WHERE user_id IN (?,?) GROUP BY conversation_id`
-        connection.query(sql, [user_id_1, user_id_2], (error, result) => {
+        const sql = `SELECT conversation_id FROM conversation_member WHERE user_1_id = ? AND user_2_id = ?`
+        connection.query(sql, [user_1_id, user_2_id], (error, result) => {
             if (!error) {
                 resolve(result)
             } else {
@@ -43,8 +43,8 @@ const getAllConversations = (conversation_member_id) => {
     return new Promise ((resolve, reject) => {
         const sql = `SELECT conversations.id AS conversation_id, conversations.total_users, conversations.total_messages, 
         conversations.unread_messages FROM conversation_member INNER JOIN conversations ON conversation_member.conversation_id = 
-        conversations.id WHERE conversation_member.user_id = ?`
-        connection.query(sql, conversation_member_id, (error, result) => {
+        conversations.id WHERE conversation_member.user_1_id = ? OR conversation_member.user_2_id = ?`
+        connection.query(sql, [conversation_member_id, conversation_member_id], (error, result) => {
             if (!error) {
                 resolve(result)
             } else {

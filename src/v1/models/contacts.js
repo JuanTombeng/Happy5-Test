@@ -69,10 +69,11 @@ const getContactList = (contact_group_id) => {
     })
 }
 
-const getContactMemberId = (contact_group_id) => {
+const getContactMemberId = (contact_group_id, target_username) => {
     return new Promise ((resolve, reject) => {
-        const sql = `SELECT user_id FROM contact_member WHERE contact_group_id = ?`
-        connection.query(sql, contact_group_id, (error, result) => {
+        const sql = `SELECT contact_member.user_id FROM contact_member INNER JOIN users ON contact_member.user_id = users.id 
+        WHERE contact_member.contact_group_id = ? AND users.username = ?`
+        connection.query(sql, [contact_group_id, target_username], (error, result) => {
             if (!error) {
                 resolve(result)
             } else {

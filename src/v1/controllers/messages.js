@@ -12,13 +12,14 @@ const sendMessage = async (req, res, next) => {
         const [user_sender] = await userModel.findUser(email)
         const checkContactGroup = await contactModel.checkContactGroup(user_sender.id)
         if (checkContactGroup.length == 1 && checkContactGroup[0].total_contacts > 0) {
-            const checkTargetUser = await contactModel.getContactMemberId(checkContactGroup[0].id)
+            const checkTargetUser = await contactModel.getContactMemberId(checkContactGroup[0].id, target_username)
             if (checkTargetUser.length > 0) { // target_user id ada di dalam contact group sender
                 const [checkTargetUsername] = await userModel.checkUsername(checkTargetUser[0].user_id)
                 if (checkTargetUsername.username === target_username) { //target_username ==
                     const user_target_id = checkTargetUser[0].user_id
                     const checkExistingConversation = await conversationModel.checkExistingConversation(user_sender.id, user_target_id)
-                    if (checkExistingConversation.length == 1) { //check if convo exist
+                    console.log(checkExistingConversation)
+                    if (checkExistingConversation.length > 0) { //check if convo exist
                         const new_message_id = uuidv4()
                         const dataMessage = {
                             id : new_message_id,
@@ -58,21 +59,15 @@ const sendMessage = async (req, res, next) => {
                         }
                         const newConversation = await conversationModel.newConversation(newConversationData)
                         if (newConversation.affectedRows > 0) {
-                            const new_conversation_member_id_sender = uuidv4()
-                            const new_conversation_member_id_receiver = uuidv4()
-                            const newConversationMemberDataSender = {
-                                id : new_conversation_member_id_sender,
+                            const new_conversation_member_id = uuidv4()
+                            const newConversationMemberData = {
+                                id : new_conversation_member_id,
                                 conversation_id : new_conversation_id,
-                                user_id : user_sender.id
+                                user_1_id : user_sender.id,
+                                user_2_id : user_target_id
                             }
-                            const newConversationMemberDataReceiver = {
-                                id : new_conversation_member_id_receiver,
-                                conversation_id : new_conversation_id,
-                                user_id : user_target_id
-                            }
-                            const newConversationMemberSender = await conversationModel.newConversationMember(newConversationMemberDataSender)
-                            const newConversationMemberReceiver = await conversationModel.newConversationMember(newConversationMemberDataReceiver)
-                            if (newConversationMemberSender.affectedRows > 0 && newConversationMemberReceiver.affectedRows > 0) {
+                            const newConversationMember = await conversationModel.newConversationMember(newConversationMemberData)
+                            if (newConversationMember.affectedRows > 0) {
                                 const new_message_id = uuidv4()
                                 const dataMessage = {
                                     id : new_message_id,
