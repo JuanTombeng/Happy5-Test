@@ -130,7 +130,7 @@ const getAllConversations = async (req, res, next) => {
 const getConversation = async (req, res, next) => {
     try {
         const {email, username} = req.decoded
-        const {target_username} = req.body
+        const target_username = req.params.username
         const [user_holder] = await userModel.getUserId(username)
         const [user_target] = await userModel.getUserId(target_username)
         const [conversationId] = await messageModel.getConversationId(user_holder.id, user_target.id)
