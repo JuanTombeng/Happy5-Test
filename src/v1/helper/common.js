@@ -10,10 +10,10 @@ const response = (res, title, status, result, message, error) => {
     })
 }
 
-const URLNotFoundHandling = (res) => {
+const URLNotFoundHandling = (req, res) => {
     res.status(404)
     res.json({
-        message : 'URL NOT FOUND'
+        message : `URL NOT FOUND`
     })
 }
 
