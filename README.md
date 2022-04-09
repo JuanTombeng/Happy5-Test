@@ -78,7 +78,7 @@ After Login, please copy the provided **token** in the login success response to
 #### Authentication
 **Please change the authentication type into Bearer Token**  
 
-![Bearer Token](./src/asset/bearer-token.png)
+![Bearer Token](./src/asset/token-bearer.png)
 
 **Request Route**
 ```
