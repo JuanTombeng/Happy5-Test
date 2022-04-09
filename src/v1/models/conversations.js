@@ -15,8 +15,8 @@ const newConversation = (data) => {
 
 const checkExistingConversation = (user_1_id, user_2_id) => {
     return new Promise ((resolve, reject) => {
-        const sql = `SELECT conversation_id FROM conversation_member WHERE user_1_id = ? AND user_2_id = ?`
-        connection.query(sql, [user_1_id, user_2_id], (error, result) => {
+        const sql = `SELECT conversation_id FROM conversation_member WHERE (user_1_id = '${user_1_id}' AND user_2_id = '${user_2_id}') OR (user_1_id = '${user_2_id}' AND user_2_id = '${user_1_id}')`
+        connection.query(sql, (error, result) => {
             if (!error) {
                 resolve(result)
             } else {
