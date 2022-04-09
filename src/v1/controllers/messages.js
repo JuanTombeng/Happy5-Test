@@ -109,6 +109,59 @@ const sendMessage = async (req, res, next) => {
     }
 }
 
+const getAllConversations = async (req, res, next) => {
+    try {
+        const {email, username} = req.decoded
+        const [user] = await userModel.findUser(email)
+        const listCOnversations = await conversationModel.getAllConversations(user.id)
+        if (listCOnversations.length == 0) {
+            response(res, 'Success', 200, [], 'You have 0 conversations.')
+        } else {
+            response(res, 'Success', 200, listCOnversations, `List of ${username}'s active conversations.`)
+        }
+    } catch (error) {
+        console.log(error)
+        next({
+            status : 500, message : `${error.message}`
+        })
+    }
+}
+
+const getConversation = async (req, res, next) => {
+    try {
+        const {email, username} = req.decoded
+        const {target_username} = req.body
+        const [user_holder] = await userModel.getUserId(username)
+        const [user_target] = await userModel.getUserId(target_username)
+        const [conversationId] = await messageModel.getConversationId(user_holder.id, user_target.id)
+        const updateReadMessage = await messageModel.updateReadMessage(conversationId.conversation_id)
+        const updateConversation = await conversationModel.updateConversation({unread_messages : 0}, conversationId.conversation_id)
+        if (updateConversation.affectedRows > 0 && updateReadMessage.affectedRows > 0) {
+            const conversationDetails = await conversationModel.getConversationDetails(conversationId.conversation_id)
+            const listMessages = await messageModel.getAllMessages(conversationId.conversation_id)
+            const result = {
+                conversation_details : {
+                    id : conversationDetails[0].id,
+                    total_user : conversationDetails[0].total_users,
+                    total_messages : conversationDetails[0].total_messages,
+                    unread_messages : conversationDetails[0].unread_messages,
+                    login_as : username,
+                    conversation_with : target_username
+                },
+                messages : listMessages
+            }
+            response(res, 'Success', 200, result, `Conversation with ${target_username}`)
+        }
+    } catch (error) {
+        console.log(error)
+        next({
+            status : 500, message : `${error.message}`
+        })
+    }
+}
+
 module.exports = {
-    sendMessage
+    sendMessage,
+    getAllConversations,
+    getConversation
 }

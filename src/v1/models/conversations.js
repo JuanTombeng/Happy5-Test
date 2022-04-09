@@ -44,7 +44,16 @@ const getAllConversations = (conversation_member_id) => {
         const sql = `SELECT conversations.id AS conversation_id, conversations.total_users, conversations.total_messages, 
         conversations.unread_messages FROM conversation_member INNER JOIN conversations ON conversation_member.conversation_id = 
         conversations.id WHERE conversation_member.user_1_id = ? OR conversation_member.user_2_id = ?`
+        // const sql = `SELECT conversations.id AS conversation_id, conversations.total_users, conversations.total_messages, 
+        // conversations.unread_messages, IF(conversation_member.user_1_id = '${conversation_member_id}', user1.username, user2.username) AS username 
+        // FROM conversation_member INNER JOIN conversations ON conversation_member.conversation_id = conversations.id 
+        // INNER JOIN users user1 ON (conversation_member.user_1_id = users.id) INNER JOIN users user2 ON (conversation_member.user_2_id = users.id) 
+        // WHERE conversation_member.user_1_id = '${conversation_member_id}' OR conversation_member.user_2_id = '${conversation_member_id}'`
+        // const sql = `SELECT conversations.*, user1.username AS username, user2.username AS username FROM conversation_member INNER JOIN conversations 
+        // ON conversation_member.conversation_id = conversations.id INNER JOIN users AS user1 ON users.id = conversation_member.user_1_id INNER JOIN users AS user2 
+        // ON users.id = conversation_member.user_2_id WHERE conversation_member.user_1_id = ? OR conversation_member.user_2_id = ?`
         connection.query(sql, [conversation_member_id, conversation_member_id], (error, result) => {
+        // connection.query(sql, conversation_member_id, (error, result) => {
             if (!error) {
                 resolve(result)
             } else {
