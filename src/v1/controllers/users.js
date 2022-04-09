@@ -19,25 +19,25 @@ const getUser = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const {email, password} = req.body
-        const [findUser] = await userModel.findUser(email)
-        if (findUser.email === email) {
-            const checkPassword = await bcrypt.compare(password, findUser.password)
+        const findUser = await userModel.findUser(email)
+        if (findUser.length == 0) {
+            response(res, 'Failed', 404, null, 'Email not found.', true)
+        } else {
+            const checkPassword = await bcrypt.compare(password, findUser[0].password)
             if (checkPassword) {
                 const payload = {
-                    email : findUser.email,
-                    username : findUser.username
+                    email : findUser[0].email,
+                    username : findUser[0].username
                 }
                 const token = generateToken(payload)
                 const result = {
-                    username : findUser.username,
+                    username : findUser[0].username,
                     token : token
                 }
-                response(res, 'Success', 200, result, `Welcome back ${findUser.username}`)
+                response(res, 'Success', 200, result, `Welcome back ${findUser[0].username}`)
             } else {
                 response(res, 'Failed', 403, null, 'Your password is incorrect.', true)
             }
-        } else {
-            response(res, 'Failed', 404, null, 'Email not found.', true)
         }
     } catch (error) {
         console.log(error)
